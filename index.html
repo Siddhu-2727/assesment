@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Registration Portal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Company Registration Portal</h1>
+        <div class="login-container">
+            <a href="admin.html"><button class="button">Admin Login</button></a>
+            <button onclick="showLoginForm('user')">User Login</button>
+            <button onclick="showLoginForm('company')">Company Login</button>
+           
+            <!-- <a href="user.html"><button class="button">User Login</button></a>
+            <a href="company.html"><button class="button">Company Login</button></a> -->
+        </div>
+       <form id="login-form" style="display:none;" onsubmit="return handleLogin(event)">
+            <h2 id="login-title">Login</h2>
+            <input type="hidden" id="login-type" name="loginType">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+    <script>
+
+function showLoginForm(type) {
+    document.getElementById('login-form').style.display = 'block';
+    document.getElementById('login-title').textContent = `${type.charAt(0).toUpperCase() + type.slice(1)} Login`;
+    document.getElementById('login-type').value = type;
+}
+
+function handleLogin(event) {
+    event.preventDefault();
+    
+    const loginType = document.getElementById('login-type').value;
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    fetch('/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ loginType, username, password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (loginType === 'admin') {
+                window.location.href = '/admin.html';
+            } else if (loginType === 'user') {
+                window.location.href = '/user.html';
+            } else if (loginType === 'company') {
+                window.location.href = `/company.html?username=${username}`;
+            } else {
+                alert('Login successful!');
+            }
+        } else {
+            alert('Login failed: ' + data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+    </script>
+<link rel="database" href="database.js">
+<link rel="server" href="server.js">
+</body>
+</html>

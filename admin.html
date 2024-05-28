@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Company Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Admin - Company Management</h1>
+        <form id="company-form" onsubmit="return registerCompany(event)">
+            <h2>Register Company</h2>
+            <label for="company-name">Company Name:</label>
+            <input type="text" id="company-name" name="companyName" required>
+            <label for="company-address">Address:</label>
+            <input type="text" id="company-address" name="companyAddress" required>
+            <label for="company-username">Username:</label>
+            <input type="text" id="company-username" name="companyUsername" required>
+            <label for="company-password">Password:</label>
+            <input type="password" id="company-password" name="companyPassword" required>
+            <button type="submit">Register</button>
+        </form>
+        <h2>Company List</h2>
+        <table id="company-list">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Username</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Company rows will be show here -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchCompanies();
+});
+
+function registerCompany(event) {
+    event.preventDefault();
+
+    const companyName = document.getElementById('company-name').value;
+    const companyAddress = document.getElementById('company-address').value;
+    const companyUsername = document.getElementById('company-username').value;
+    const companyPassword = document.getElementById('company-password').value;
+
+    fetch('/registerCompany', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ companyName, companyAddress, companyUsername, companyPassword })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Company registered successfully!');
+            fetchCompanies();
+        } else {
+            alert('Registration failed: ' + data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function fetchCompanies() {
+    fetch('/getCompanies')
+    .then(response => response.json())
+    .then(data => {
+        const companyList = document.getElementById('company-list').getElementsByTagName('tbody')[0];
+        companyList.innerHTML = '';
+        data.companies.forEach(company => {
+            const row = companyList.insertRow();
+            row.insertCell(0).innerText = company.id;
+            row.insertCell(1).innerText = company.name;
+            row.insertCell(2).innerText = company.address;
+            row.insertCell(3).innerText = company.username;
+            const actionsCell = row.insertCell(4);
+            actionsCell.innerHTML = `
+                <button onclick="editCompany(${company.id})">Edit</button>
+                <button onclick="deleteCompany(${company.id})">Delete</button>
+            `;
+        });
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function editCompany(id) {
+    
+}
+
+function deleteCompany(id) {
+    fetch(`/deleteCompany/${id}`, { method: 'DELETE' })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Company deleted successfully!');
+            fetchCompanies();
+        } else {
+            alert('Deletion failed: ' + data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+
+    </script>
+
+<link rel="database" href="database.js">
+<link rel="server" href="server.js">
+</body>
+</html>

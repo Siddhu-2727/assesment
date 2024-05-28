@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company - Details</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Company Details</h1>
+        <table id="company-details">
+            <tbody>
+                <!-- Company details will be show here -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const username = urlParams.get('username');
+    fetchCompanyDetails(username);
+});
+
+function fetchCompanyDetails(username) {
+    fetch(`/getCompanyDetails?username=${username}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const companyDetails = document.getElementById('company-details');
+            companyDetails.innerHTML = `
+                <tr><td>ID:</td><td>${data.company.id}</td></tr>
+                <tr><td>Name:</td><td>${data.company.name}</td></tr>
+                <tr><td>Address:</td><td>${data.company.address}</td></tr>
+                <tr><td>Username:</td><td>${data.company.username}</td></tr>
+            `;
+        } else {
+            alert('Failed to fetch company details: ' + data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+
+    </script>
+
+<link rel="database" href="database.js">
+<link rel="server" href="server.js">
+</body>
+</html>

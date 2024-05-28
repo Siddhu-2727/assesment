@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User - Company List</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Company List</h1>
+        <table id="company-list">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Username</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Company rows will be Show here -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchCompanies();
+});
+
+function fetchCompanies() {
+    fetch('/getCompanies')
+    .then(response => response.json())
+    .then(data => {
+        const companyList = document.getElementById('company-list').getElementsByTagName('tbody')[0];
+        companyList.innerHTML = '';
+        data.companies.forEach(company => {
+            const row = companyList.insertRow();
+            row.insertCell(0).innerText = company.id;
+            row.insertCell(1).innerText = company.name;
+            row.insertCell(2).innerText = company.address;
+            row.insertCell(3).innerText = company.username;
+        });
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+
+    </script>
+<link rel="database" href="database.js">
+<link rel="server" href="server.js">
+</body>
+</html>
